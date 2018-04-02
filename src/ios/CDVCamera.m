@@ -464,7 +464,24 @@ static NSString* toBase64(NSData* data) {
                 return;
             } else {
                 NSString* nativeUri = [[self urlTransformer:url] absoluteString];
-                result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:nativeUri];
+                NSString* testHEICString = [nativeUri lowercaseString];
+                if([testHEICString rangeOfString:@"heic"].location != NSNotFound || [testHEICString rangeOfString:@"heif"].location != NSNotFound) {
+                    NSLog(@"url is heic %@", testHEICString);
+                    image = [self retrieveImage:info options:options];
+                    NSData* data = UIImageJPEGRepresentation(image, 1.0);
+                    NSString* extension = @"jpg";
+                    NSString* filePath = [self tempFilePath:extension];
+                    NSError* err = nil;
+                    NSLog(@"file path %@", filePath);
+                    if (![data writeToFile:filePath options:NSAtomicWrite error:&err]) {
+                        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_IO_EXCEPTION messageAsString:[err localizedDescription]];
+                    } else {
+                        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:[[self urlTransformer:[NSURL fileURLWithPath:filePath]] absoluteString]];
+                    }
+                } else {
+                    NSLog(@"url is not heic image %@", nativeUri);
+                    result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:nativeUri];
+                }
             }
         }
             break;
