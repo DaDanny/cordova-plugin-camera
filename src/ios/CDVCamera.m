@@ -479,39 +479,7 @@ static NSString* toBase64(NSData* data) {
                     [dictionary setValue:newFilePath forKey:@"fileUrl"];
                     
                     result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:dictionary];
-                    
-                    //                    result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:[[self urlTransformer:[NSURL fileURLWithPath:filePath]] absoluteString]];
                 }
-                //                if([testHEICString rangeOfString:@"heic"].location != NSNotFound || [testHEICString rangeOfString:@"heif"].location != NSNotFound) {
-                //                    NSLog(@"url is heic %@", testHEICString);
-                ////                    image = [self retrieveImage:info options:options];
-                ////                    NSData* data = UIImageJPEGRepresentation(image, 1.0);
-                ////                    NSString* extension = @"jpg";
-                ////                    NSString* filePath = [self tempFilePath:extension];
-                ////                    NSError* err = nil;
-                ////                    if (![data writeToFile:filePath options:NSAtomicWrite error:&err]) {
-                ////                        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_IO_EXCEPTION messageAsString:[err localizedDescription]];
-                ////                    } else {
-                ////                        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:[[self urlTransformer:[NSURL fileURLWithPath:filePath]] absoluteString]];
-                ////                    }
-                //                } else {
-                ////                    image = [self retrieveImage:info options:options];
-                ////                    NSData* data = [self processImage:image info:info options:options];
-                //                    if (data) {
-                //
-                ////                        NSString* extension = options.encodingType == EncodingTypePNG? @"png" : @"jpg";
-                ////                        NSString* filePath = [self tempFilePath:extension];
-                //                        NSError* err = nil;
-                //
-                //                        // save file
-                ////                        if (![data writeToFile:filePath options:NSAtomicWrite error:&err]) {
-                ////                            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_IO_EXCEPTION messageAsString:[err localizedDescription]];
-                ////                        } else {
-                ////                            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:[[self urlTransformer:[NSURL fileURLWithPath:filePath]] absoluteString]];
-                ////                        }
-                //                    }
-                //                    result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:nativeUri];
-                //                }
             }
         }
             break;
