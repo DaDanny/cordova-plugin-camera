@@ -279,7 +279,7 @@ static NSString* toBase64(NSData* data) {
 - (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated
 {
     if([navigationController isKindOfClass:[UIImagePickerController class]]){
-        
+
         // If popoverWidth and popoverHeight are specified and are greater than 0, then set popover size, else use apple's default popoverSize
         NSDictionary* options = self.pickerController.pictureOptions.popoverOptions;
         if(options) {
@@ -290,8 +290,8 @@ static NSString* toBase64(NSData* data) {
                 [viewController setPreferredContentSize:CGSizeMake(popoverWidth,popoverHeight)];
             }
         }
-        
-        
+
+
         UIImagePickerController* cameraPicker = (UIImagePickerController*)navigationController;
 
         if(![cameraPicker.mediaTypes containsObject:(NSString*)kUTTypeImage]){
@@ -374,7 +374,7 @@ static NSString* toBase64(NSData* data) {
                     self.metadata = [[NSMutableDictionary alloc] init];
 
                     NSMutableDictionary* EXIFDictionary = [[controllerMetadata objectForKey:(NSString*)kCGImagePropertyExifDictionary]mutableCopy];
-                    if (EXIFDictionary) {
+                    if (EXIFDictionary)	{
                         [self.metadata setObject:EXIFDictionary forKey:(NSString*)kCGImagePropertyExifDictionary];
                     }
 
@@ -464,8 +464,25 @@ static NSString* toBase64(NSData* data) {
                 }];
                 return;
             } else {
-                NSString* nativeUri = [[self urlTransformer:url] absoluteString];
-                result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:nativeUri];
+                NSString* nativeUri = [[self urlTransformer:url] absoluteString];                
+                image = [self retrieveImage:info options:options];
+                NSData* data = [self processImage:image info:info options:options];
+                NSString* extension = options.encodingType == EncodingTypePNG? @"png" : @"jpg";
+                NSString* filePath = [self tempFilePath:extension];
+                NSError* err = nil;
+                
+                if (![data writeToFile:filePath options:NSAtomicWrite error:&err]) {
+                    result = [CDVPluginResult resultWithStatus:CDVCommandStatus_IO_EXCEPTION messageAsString:[err localizedDescription]];
+                } else {
+                    NSString* newFilePath = [[self urlTransformer:[NSURL fileURLWithPath:filePath]] absoluteString];                    
+                    NSMutableDictionary* dictionary = [NSMutableDictionary dictionaryWithCapacity:2];
+                    [dictionary setValue:nativeUri forKey:@"nativeUri"];
+                    [dictionary setValue:newFilePath forKey:@"fileUrl"];
+                    
+                    result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:dictionary];
+                    
+                    //                    result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:[[self urlTransformer:[NSURL fileURLWithPath:filePath]] absoluteString]];
+                }
             }
         }
             break;
@@ -586,15 +603,15 @@ static NSString* toBase64(NSData* data) {
 
 - (CLLocationManager*)locationManager
 {
-    if (locationManager != nil) {
-        return locationManager;
-    }
+	if (locationManager != nil) {
+		return locationManager;
+	}
 
-    locationManager = [[CLLocationManager alloc] init];
-    [locationManager setDesiredAccuracy:kCLLocationAccuracyNearestTenMeters];
-    [locationManager setDelegate:self];
+	locationManager = [[CLLocationManager alloc] init];
+	[locationManager setDesiredAccuracy:kCLLocationAccuracyNearestTenMeters];
+	[locationManager setDelegate:self];
 
-    return locationManager;
+	return locationManager;
 }
 
 - (void)locationManager:(CLLocationManager*)manager didUpdateToLocation:(CLLocation*)newLocation fromLocation:(CLLocation*)oldLocation
